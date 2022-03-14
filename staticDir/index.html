@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="js/Plain.js"></script>
+    <script src="js/Bullet.js"></script>
+    <script src="js/Cannon.js"></script>
+    <script src="js/Main.js"></script>
+    <script src="libs/three.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+</head>
+<body>  
+    <label>Kąt<input type="range" id="angle" value="45" step="1" min="0" max="90" /></label>
+    <label>Obrót<input type="range" id="turn" value="0" step="1" min="0" max="360" /></label>
+    <input type="button" id="boom" value="Strzał"/>
+    <div id="plansza"></div>
+    <script>
+        var player
+        window.addEventListener("load", function () {
+            var client = io();
+            client.on("onconnect", function (data) {
+                player = data.ilosc
+                var main = new Main(client, player)
+                client.on("angle", function (data) {
+                    main.updateCannon(data.angle, data.theta, data.theta2)
+                })
+                client.on("takingshot", function (data) {
+                    main.updateShot(data.bulletx, data.bullety, data.bulletz, data.camerarot, data.cannonx, data.cannony, data.cannonz)
+                })
+                client.on("boom", function (data) {
+                    main.comeback(data.boom)
+                })
+            })
+        })
+    </script>
+</body>
+</html>
